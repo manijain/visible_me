@@ -1,0 +1,5 @@
+<% if users.present? %>
+  <% users.each do |user| %>
+    <span><%= link_to user.full_name, profile_path(user) %></span></br>
+  <% end %>
+<% end %>

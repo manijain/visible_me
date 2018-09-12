@@ -1,0 +1,7 @@
+<%= form_tag(search_user_path, remote: true) do %>
+  <%= text_field_tag :user %>
+  <%= submit_tag "Submit" %>
+<% end %>
+
+<div id="user_search_result">
+</div>

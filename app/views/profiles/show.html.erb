@@ -1,0 +1,64 @@
+<span>
+  <% if @user == current_user %>
+    <%= link_to 'Edit profile', edit_user_registration_path, :class => 'navbar-link' %>
+  <% else %>
+    <div id="user_activity">
+      <% if current_user_is_following(current_user.id, @user.id) %>
+        <%= link_to 'Unfollow', unfollow_user_path,
+                             remote: true,
+                             class: 'btn unfollow-button',
+                             id: 'unfollow-button',
+                             method: :post %>
+      <% else %>
+        <%= link_to 'Follow', follow_user_path,
+                          remote: true,
+                          class: 'btn follow-button',
+                          id: 'follow-button',
+                          method: :post %>
+      <% end %>
+      
+      <% if current_user.friend_requests.map(&:friend).include?(@user) %>
+        <span>
+          <% friend_request = current_user.friend_requests.where(friend_id: @user.id).last %>
+          <%= link_to "Cancel Request", friend_request_path(friend_request), method: :delete %>
+        </span>
+      <% elsif current_user.friends.include?(@user) %>
+        <span><%= link_to "UnFriend", friends_destroy_path(@user), method: :delete %></span>
+      <% else %>
+      <span>
+        <%= form_tag(:controller => "friend_requests", :action => "create") do %>
+          <%= hidden_field_tag :friend_id, @user.id %>
+          <%= submit_tag "Send Friend Request" %>
+        <% end %>
+      </span>
+      <% end %>
+    </div>
+  <% end %>
+</span>
+
+<h4 id="followers">followers (<%= @followers_count %>)</h4>
+<h4 id="following">following (<%= @following_count %>)</h4>
+
+<span>Your incoming friend request : <%= @incoming.count %> 
+<% if @incoming.present? %>
+  <% @incoming.each do |frequest| %>
+    <%= link_to "Accept", friend_request_path(frequest), method: :put %>
+    <%= link_to "Decline", friend_request_path(frequest), method: :delete %>
+  <% end %>
+<% end %>
+</span>
+
+<span>Your created friend request : <%= @outgoing.count %>
+<% if @outgoing.present? %>
+  <% @outgoing.each do |frequest| %>
+  <%= link_to "Cancel Request", friend_request_path(frequest), method: :delete %><br/>
+  <% end %>
+<% end %>
+</span>
+
+<h3>friend list</h3>
+<% @friends.each do |f| %>
+<%= link_to f.full_name, profile_path(f) %>
+<% end %>
+
+
